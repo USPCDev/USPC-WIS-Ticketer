@@ -52,6 +52,8 @@ if st.session_state.get("booking_success_multiple"):
     if st.button("Close Message & Refresh", type="secondary", width="stretch", key="multiple_refresh_button"):
         st.rerun()
 else:
+    FORM_CATEGORY = "Multiple" # Differentiates between Single or Multiple Booking
+
     with st.form("multiple_booking_form", clear_on_submit=False, enter_to_submit=False):
         st.subheader("Primary Contact Details")
 
@@ -95,13 +97,13 @@ else:
         multiple_submitted = st.form_submit_button("Submit Booking")
 
     @st.dialog("Confirm Booking", width="small")
-    def show_multiple_confirm_dialog(primary_name, primary_email, primary_phone, age, gender, home_church, city_town, attendance, validated_attendees):
+    def show_multiple_confirm_dialog(primary_name, primary_email, primary_phone, age, gender, home_church, city_town, form_category, attendance, validated_attendees):
         st.write(f"Are you sure you want to confirm the booking for **{primary_name}**?")
 
         with st_horizontal():
             if st.button("Confirm", type="primary", width="stretch", key="multiple_confirm_button"):
                 try:
-                    airtable_functions.multiple_booking_assigner(primary_name, primary_email, primary_phone, age, gender, home_church, city_town, attendance, validated_attendees)
+                    airtable_functions.multiple_booking_assigner(primary_name, primary_email, primary_phone, age, gender, home_church, city_town, form_category, attendance, validated_attendees)
 
                     st.session_state.booking_success_multiple = True
                     st.rerun()
@@ -141,4 +143,4 @@ else:
                 is_valid = False
             
             if is_valid:
-                show_multiple_confirm_dialog(PRIMARY_NAME.strip().title(), PRIMARY_EMAIL.strip(), "".join(PRIMARY_NUMBER.split()), AGE, GENDER, HOME_CHURCH.strip(), CITY_TOWN.strip().title(), ATTENDANCE, VALIDATED_ATTENDEES)
+                show_multiple_confirm_dialog(PRIMARY_NAME.strip().title(), PRIMARY_EMAIL.strip(), "".join(PRIMARY_NUMBER.split()), AGE, GENDER, HOME_CHURCH.strip(), CITY_TOWN.strip().title(), FORM_CATEGORY, ATTENDANCE, VALIDATED_ATTENDEES)

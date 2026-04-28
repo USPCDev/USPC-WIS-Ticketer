@@ -52,6 +52,8 @@ if st.session_state.get("booking_success_single"):
     if st.button("Close Message & Refresh", type="secondary", width="stretch", key="single_refresh_button"):
         st.rerun()
 else:
+    FORM_CATEGORY = "Single" # Differentiates between Single or Multiple Booking
+
     with st.form("singe_booking_form", clear_on_submit=False, enter_to_submit=False):
         NAME = st.text_input("Name *", placeholder="Enter your name", icon=":material/id_card:")
         EMAIL = st.text_input("Email *", placeholder="Enter your email", icon=":material/mail:", help="Please enter the correct email.")
@@ -69,13 +71,13 @@ else:
         single_submitted = st.form_submit_button("Submit Booking")
 
     @st.dialog("Confirm Booking", width="small")
-    def show_single_confirm_dialog(name, email, number, age, gender, home_church, city_town):
+    def show_single_confirm_dialog(name, email, number, age, gender, home_church, city_town, form_category):
         st.write(f"Are you sure you want to confirm the booking for **{name}**?")
 
         with st_horizontal():
             if st.button("Confirm", type="primary", width="stretch", key="single_confirm_button"):
                 try:
-                    airtable_functions.single_booking_assigner(name, email, number, age, gender, home_church, city_town)
+                    airtable_functions.single_booking_assigner(name, email, number, age, gender, home_church, city_town, form_category)
 
                     st.session_state.booking_success_single = True
                     st.rerun()
@@ -92,4 +94,4 @@ else:
         elif not mobile_number_verifier("".join(NUMBER.split())):
             st.error("Please enter a valid mobile number in the example format, +447xxxxxxxxx, without spaces!")   
         else:
-            show_single_confirm_dialog(NAME.strip().title(), EMAIL.strip(), "".join(NUMBER.split()), AGE, GENDER, HOME_CHURCH.strip(), CITY_TOWN.strip().title())
+            show_single_confirm_dialog(NAME.strip().title(), EMAIL.strip(), "".join(NUMBER.split()), AGE, GENDER, HOME_CHURCH.strip(), CITY_TOWN.strip().title(), FORM_CATEGORY)

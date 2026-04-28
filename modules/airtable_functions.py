@@ -1,7 +1,7 @@
 import streamlit as st
 from pyairtable import Api
 
-def single_booking_assigner(primary_name, primary_email, primary_phone, age, gender, home_church, city_town):
+def single_booking_assigner(primary_name, primary_email, primary_phone, age, gender, home_church, city_town, form_category):
     with st.spinner("Processing..."):
         api = Api(st.secrets["airtable"]["PAT"])
         base = api.base(st.secrets["airtable"]["BASE_ID"])
@@ -18,6 +18,7 @@ def single_booking_assigner(primary_name, primary_email, primary_phone, age, gen
         if gender != "Please Choose Gender": booking_data["Gender"] = gender
         if home_church: booking_data["Home Church / Congregation"] = home_church
         if city_town: booking_data["City / Town"] = city_town
+        if form_category: booking_data["Form Category"] = form_category
 
         booking_record = bookings_table.create(booking_data)
 
@@ -37,7 +38,7 @@ def single_booking_assigner(primary_name, primary_email, primary_phone, age, gen
 
         return booking_record_id
 
-def multiple_booking_assigner(primary_name, primary_email, primary_phone, age, gender, home_church, city_town, attendance, attendees):
+def multiple_booking_assigner(primary_name, primary_email, primary_phone, age, gender, home_church, city_town, form_category, attendance, attendees):
     with st.spinner("Processing..."):
         api = Api(st.secrets["airtable"]["PAT"])
         base = api.base(st.secrets["airtable"]["BASE_ID"])
@@ -54,6 +55,7 @@ def multiple_booking_assigner(primary_name, primary_email, primary_phone, age, g
         if gender != "Please Choose Gender": booking_data["Gender"] = gender
         if home_church: booking_data["Home Church / Congregation"] = home_church
         if city_town: booking_data["City / Town"] = city_town
+        if form_category: booking_data["Form Category"] = form_category
 
         booking_record = bookings_table.create(booking_data)
 
