@@ -1,5 +1,6 @@
 import streamlit as st
 from pyairtable import Api
+import time
 
 def single_booking_assigner(primary_name, primary_email, primary_phone, age, gender, home_church, city_town, form_category):
     with st.spinner("Processing..."):
@@ -34,9 +35,24 @@ def single_booking_assigner(primary_name, primary_email, primary_phone, age, gen
         if age != "Please Choose Age": primary_attendee_data["Age"] = age
         if gender != "Please Choose Gender": primary_attendee_data["Gender"] = gender
 
+        if age in ["13-19", "20-25", "26-35", "36-50", "50+"]:
+            primary_attendee_data["Booking Price"] = 50
+
         attendees_table.create(primary_attendee_data)
 
-        return booking_record_id
+        # 3. FETCH RELEVANT DETAILS OF THE MAIN RECORD WITH RETRIES
+        fields = {}
+        for _ in range(10): # 10 retries
+            primary_record = bookings_table.get(booking_record_id)
+            fields = primary_record.get("fields", {})
+            if fields.get("Total Booking Price", 0) > 0:
+                break
+            time.sleep(3)
+
+        # 4. UPDATE THE SYSTEM VARIABLE IN THE MAIN RECORD FOR CONFIRMATION
+        bookings_table.update(booking_record_id, {"Price Calculation Status (System Field)": True})
+
+        return fields.get("Registration Code"), fields.get("Form Category"), fields.get("Total Booking Price")
 
 def multiple_booking_assigner(primary_name, primary_email, primary_phone, age, gender, home_church, city_town, form_category, attendance, attendees):
     with st.spinner("Processing..."):
@@ -71,6 +87,11 @@ def multiple_booking_assigner(primary_name, primary_email, primary_phone, age, g
         if age != "Please Choose Age": primary_attendee_data["Age"] = age
         if gender != "Please Choose Gender": primary_attendee_data["Gender"] = gender
 
+        calculated_total_price = 0
+        if attendance == True and age in ["13-19", "20-25", "26-35", "36-50", "50+"]:
+            primary_attendee_data["Booking Price"] = 50
+            calculated_total_price += 50
+
         attendees_table.create(primary_attendee_data)
 
         for attendee in attendees:
@@ -84,6 +105,22 @@ def multiple_booking_assigner(primary_name, primary_email, primary_phone, age, g
                 if attendee["age"] != "Please Choose Age": attendee_data["Age"] = attendee["age"]
                 if attendee["gender"] != "Please Choose Gender": attendee_data["Gender"] = attendee["gender"]
                 
+                if attendee["age"] in ["13-19", "20-25", "26-35", "36-50", "50+"]:
+                    attendee_data["Booking Price"] = 50
+                    calculated_total_price += 50
+                
                 attendees_table.create(attendee_data)
 
-        return booking_record_id
+        # 3. FETCH RELEVANT DETAILS OF THE MAIN RECORD WITH RETRIES
+        fields = {}
+        for _ in range(10): # 10 retries
+            primary_record = bookings_table.get(booking_record_id)
+            fields = primary_record.get("fields", {})
+            if fields.get("Total Booking Price", 0) == calculated_total_price:
+                break
+            time.sleep(3)
+
+        # 4. UPDATE THE SYSTEM VARIABLE IN THE MAIN RECORD FOR CONFIRMATION
+        bookings_table.update(booking_record_id, {"Price Calculation Status (System Field)": True})
+
+        return fields.get("Registration Code"), fields.get("Form Category"), fields.get("Total Booking Price")

@@ -45,9 +45,14 @@ st.title("Multiple Booking")
 
 # Checking for booking success status in session state
 if st.session_state.get("booking_success_multiple"):
-    st.success("Booked!")
+    st.success(f"##### Thank you for placing an order, **{st.session_state.booked_primary_name_multiple}**!\nYour order details will be sent to your email, **{st.session_state.booked_primary_email_multiple}**, shortly. If you haven't received any order confirmation email, please contact the support team whose numbers are provided in the homepage. Please pay the required *amount* using the correct *reference*, as provided below, in the mentioned bank details. Thank you once again!\n##### Order Summary:\nBooking Type: **{st.session_state.booked_booking_type_multiple}**\n\nReference No.: **{st.session_state.booked_order_id_multiple}**\n\nPrice: **£{st.session_state.booked_booking_price_multiple}.00**\n##### Bank Details:\nAccount Name: **United Shalom Pentecostal Church (Charity/Business)**\n\nAccount No.: **51553690**\n\nSort Code: **40-31-30**\n\nOnce payment has been made, our back office team will verify it, and upon successful verification, your seat will be confirmed.")
 
     del st.session_state.booking_success_multiple
+    del st.session_state.booked_primary_name_multiple
+    del st.session_state.booked_primary_email_multiple
+    del st.session_state.booked_order_id_multiple
+    del st.session_state.booked_booking_type_multiple
+    del st.session_state.booked_booking_price_multiple
 
     if st.button("Close Message & Refresh", type="secondary", width="stretch", key="multiple_refresh_button"):
         st.rerun()
@@ -103,9 +108,14 @@ else:
         with st_horizontal():
             if st.button("Confirm", type="primary", width="stretch", key="multiple_confirm_button"):
                 try:
-                    airtable_functions.multiple_booking_assigner(primary_name, primary_email, primary_phone, age, gender, home_church, city_town, form_category, attendance, validated_attendees)
+                    order_id, booking_type, booking_price = airtable_functions.multiple_booking_assigner(primary_name, primary_email, primary_phone, age, gender, home_church, city_town, form_category, attendance, validated_attendees)
 
                     st.session_state.booking_success_multiple = True
+                    st.session_state.booked_primary_name_multiple = primary_name
+                    st.session_state.booked_primary_email_multiple = primary_email
+                    st.session_state.booked_order_id_multiple = order_id
+                    st.session_state.booked_booking_type_multiple = booking_type
+                    st.session_state.booked_booking_price_multiple = booking_price
                     st.rerun()
 
                 except Exception as e:

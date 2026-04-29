@@ -45,9 +45,14 @@ st.title("Single Booking")
 
 # Checking for booking success status in session state
 if st.session_state.get("booking_success_single"):
-    st.success("Booked!")
+    st.success(f"##### Thank you for placing an order, **{st.session_state.booked_name_single}**!\nYour order details will be sent to your email, **{st.session_state.booked_email_single}**, shortly. If you haven't received any order confirmation email, please contact the support team whose numbers are provided in the homepage. Please pay the required *amount* using the correct *reference*, as provided below, in the mentioned bank details. Thank you once again!\n##### Order Summary:\nBooking Type: **{st.session_state.booked_booking_type_single}**\n\nReference No.: **{st.session_state.booked_order_id_single}**\n\nPrice: **£{st.session_state.booked_booking_price_single}.00**\n##### Bank Details:\nAccount Name: **United Shalom Pentecostal Church (Charity/Business)**\n\nAccount No.: **51553690**\n\nSort Code: **40-31-30**\n\nOnce payment has been made, our back office team will verify it, and upon successful verification, your seat will be confirmed.")
 
     del st.session_state.booking_success_single
+    del st.session_state.booked_name_single
+    del st.session_state.booked_email_single
+    del st.session_state.booked_order_id_single
+    del st.session_state.booked_booking_type_single
+    del st.session_state.booked_booking_price_single
 
     if st.button("Close Message & Refresh", type="secondary", width="stretch", key="single_refresh_button"):
         st.rerun()
@@ -77,9 +82,14 @@ else:
         with st_horizontal():
             if st.button("Confirm", type="primary", width="stretch", key="single_confirm_button"):
                 try:
-                    airtable_functions.single_booking_assigner(name, email, number, age, gender, home_church, city_town, form_category)
+                    order_id, booking_type, booking_price = airtable_functions.single_booking_assigner(name, email, number, age, gender, home_church, city_town, form_category)
 
                     st.session_state.booking_success_single = True
+                    st.session_state.booked_name_single = name
+                    st.session_state.booked_email_single = email
+                    st.session_state.booked_order_id_single = order_id
+                    st.session_state.booked_booking_type_single = booking_type
+                    st.session_state.booked_booking_price_single = booking_price
                     st.rerun()
 
                 except Exception as e:
