@@ -1,6 +1,6 @@
 import streamlit as st
 from contextlib import contextmanager
-from modules import airtable_functions
+from modules import airtable_functions, expander_functions
 import phonenumbers
 import re
 
@@ -41,6 +41,15 @@ def st_horizontal():
         st.markdown('<span class="hide-element horizontal-marker"></span>', unsafe_allow_html=True)
         yield
 
+with st_horizontal():
+    if st.button(":material/arrow_back_ios_new:", type="primary", help="Back to Home Page"):
+        st.switch_page("home.py")
+
+    if st.button("Switch to **Multiple** Booking"):
+        st.switch_page("pages/multiple_main.py")
+
+expander_functions.info_expander("single_map")
+
 st.title("Single Booking")
 
 # Checking for booking success status in session state
@@ -60,6 +69,8 @@ else:
     FORM_CATEGORY = "Single" # Differentiates between Single or Multiple Booking
 
     with st.form("singe_booking_form", clear_on_submit=False, enter_to_submit=False):
+        st.subheader("Contact Details", divider="grey")
+
         NAME = st.text_input("Name *", placeholder="Enter your name", icon=":material/id_card:")
         EMAIL = st.text_input("Email *", placeholder="Enter your email", icon=":material/mail:", help="Please enter the correct email.")
         NUMBER = st.text_input("Mobile Number (All countries supported!) *", placeholder="Enter your mobile number (e.g.: +447xxxxxxxxx)", icon=":material/call:", help="Please enter the correct mobile number in the provided format without spaces.")

@@ -1,6 +1,6 @@
 import streamlit as st
 from contextlib import contextmanager
-from modules import airtable_functions
+from modules import airtable_functions, expander_functions
 import phonenumbers
 import re
 
@@ -41,6 +41,15 @@ def st_horizontal():
         st.markdown('<span class="hide-element horizontal-marker"></span>', unsafe_allow_html=True)
         yield
 
+with st_horizontal():
+    if st.button(":material/arrow_back_ios_new:", type="primary", help="Back to Home Page"):
+        st.switch_page("home.py")
+
+    if st.button("Switch to **Single** Booking"):
+        st.switch_page("pages/single_main.py")
+
+expander_functions.info_expander("multiple_map")
+
 st.title("Multiple Booking")
 
 # Checking for booking success status in session state
@@ -60,7 +69,7 @@ else:
     FORM_CATEGORY = "Multiple" # Differentiates between Single or Multiple Booking
 
     with st.form("multiple_booking_form", clear_on_submit=False, enter_to_submit=False):
-        st.subheader("Primary Contact Details")
+        st.subheader("Primary Contact Details", divider="grey")
 
         PRIMARY_NAME = st.text_input("Name *", placeholder="Enter your name", icon=":material/id_card:")
         PRIMARY_EMAIL = st.text_input("Email *", placeholder="Enter your email", icon=":material/mail:", help="Please enter the correct email.")
@@ -79,13 +88,15 @@ else:
         
         st.divider()
         
-        st.subheader("Additional Participants")
+        st.subheader("Additional Participants", divider="grey")
         
-        attendee_tabs = st.tabs(["Attendee 1", "Attendee 2", "Attendee 3", "Attendee 4", "Attendee 5", "Attendee 6"])
+        attendee_tabs = st.tabs(["**Attendee 1**", "**Attendee 2**", "**Attendee 3**", "**Attendee 4**", "**Attendee 5**", "**Attendee 6**"])
         ATTENDEES = []
         for i, tab in enumerate(attendee_tabs):
             with tab:
-                ATTENDEE_NAME = st.text_input(f"Name {i+1} *", placeholder="Enter the name", icon=":material/id_card:", key=f"attendee_name_{i}")
+                st.markdown(f"##### Attendee {i+1} Details:")
+
+                ATTENDEE_NAME = st.text_input(f"Name *", placeholder="Enter the name", icon=":material/id_card:", key=f"attendee_name_{i}")
 
                 age_options = ["Please Choose Age", "Below 6", "6-12", "13-19", "20-25", "26-35", "36-50", "50+"]
                 ATTENDEE_AGE = st.selectbox("Age Group *", options=age_options, key=f"attendee_age_{i}")

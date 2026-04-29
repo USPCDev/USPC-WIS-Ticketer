@@ -11,6 +11,51 @@ def main():
             "About": "USPC Manchester's Official Ticket Booking Application v1.0 ® 2026. All Rights Reserved."
         }
     )
+
+    # Added frosted glass effect to the streamlit app header
+    st.html("""
+                <style>
+                    .stAppHeader {
+                        background: rgba(255,248,236,0.5);
+                        -webkit-backdrop-filter: blur(5px);
+                        backdrop-filter: blur(5px);
+                    }
+                </style>
+            """)
+    
+    # Hides the streamlit main menu items
+    st.html("""
+                <style>
+                    .stToolbarActions {visibility: hidden;}
+                </style>
+            """)
+    
+    # Center's the status widget
+    st.html("""
+                <style>
+                    .stStatusWidget {
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                    }
+                </style>
+            """)
+    
+    # Hides the markdown text's anchor link icon
+    st.html("""
+                <style>
+                    .block-container h1 a, 
+                    .block-container h2 a, 
+                    .block-container h3 a, 
+                    .block-container h4 a, 
+                    .block-container h5 a, 
+                    .block-container h6 a {
+                        display: none;
+                        visibility: hidden;
+                    }
+                </style>
+            """)
     
     nav_pages = [
         st.Page("home.py"),
