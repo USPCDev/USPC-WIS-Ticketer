@@ -112,9 +112,42 @@ else:
 
         multiple_submitted = st.form_submit_button("Submit Booking")
 
-    @st.dialog("Confirm Booking", width="small")
+    @st.dialog("Confirm Booking", width="large")
     def show_multiple_confirm_dialog(primary_name, primary_email, primary_phone, age, gender, home_church, city_town, form_category, attendance, validated_attendees):
+        import pandas as pd
+
+        def calculate_price(age_val, is_attending=True):
+            if is_attending and age_val in ["13-19", "20-25", "26-35", "36-50", "50+"]:
+                return 50
+            return 0
+
         st.write(f"Are you sure you want to confirm the booking for **{primary_name}**?")
+
+        primary_price = calculate_price(age, attendance)
+
+        st.subheader("Primary Contact Summary:")
+        primary_data = {
+            "Field": ["Name", "Email", "Mobile", "Age", "Gender", "Home Church", "City/Town", "Attending", "Price"],
+            "Value": [primary_name, primary_email, primary_phone, age, gender, home_church, city_town, "Yes" if attendance else "No", f"£{primary_price}.00"]
+        }
+        st.dataframe(pd.DataFrame(primary_data), hide_index=True)
+
+        total_price = primary_price
+
+        if validated_attendees:
+            st.subheader("Additional Attendees Summary:")
+            attendee_prices = [calculate_price(a["age"]) for a in validated_attendees]
+            total_price += sum(attendee_prices)
+
+            attendee_data = {
+                "Name": [a["name"] for a in validated_attendees],
+                "Age": [a["age"] for a in validated_attendees],
+                "Gender": [a["gender"] for a in validated_attendees],
+                "Price": [f"£{p}.00" for p in attendee_prices]
+            }
+            st.dataframe(pd.DataFrame(attendee_data), hide_index=True)
+
+        st.markdown(f"### Total Price: **£{total_price}.00**")
 
         with st_horizontal():
             if st.button("Confirm", type="primary", width="stretch", key="multiple_confirm_button"):
