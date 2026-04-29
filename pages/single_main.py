@@ -88,7 +88,17 @@ else:
 
     @st.dialog("Confirm Booking", width="small")
     def show_single_confirm_dialog(name, email, number, age, gender, home_church, city_town, form_category):
+        import pandas as pd
         st.write(f"Are you sure you want to confirm the booking for **{name}**?")
+        
+        st.subheader("Contact Summary:")
+        data = {
+            "Field": ["Name", "Email", "Mobile", "Age", "Gender", "Home Church", "City/Town"],
+            "Data": [name, email, number, age, gender, home_church, city_town]
+        }
+        st.dataframe(pd.DataFrame(data), hide_index=True)
+
+        st.markdown("### Total Price: **£50.00**")
 
         with st_horizontal():
             if st.button("Confirm", type="primary", width="stretch", key="single_confirm_button"):
